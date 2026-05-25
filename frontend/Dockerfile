@@ -1,7 +1,7 @@
 # =========================
 # Stage 1: Build React App
 # =========================
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -25,13 +25,13 @@ FROM nginx:alpine
 # Install wget for healthcheck
 RUN apk add --no-cache wget
 
-# Copy custom nginx config
+# Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built app
+# Copy built files
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose nginx port
+# Expose port
 EXPOSE 80
 
 # Healthcheck
