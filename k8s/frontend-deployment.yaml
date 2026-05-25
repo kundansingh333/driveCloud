@@ -17,7 +17,7 @@ metadata:
 labels:
 app: frontend
 
-```
+
 spec:
   containers:
     - name: frontend
@@ -41,7 +41,7 @@ spec:
           port: 80
         initialDelaySeconds: 20
         periodSeconds: 15
-```
+
 
 ---
 
