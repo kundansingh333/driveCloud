@@ -1,12 +1,12 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_HUB_CREDS = credentials('dockerhub-creds')
-        DOCKER_HUB_USER  = 'YOUR_DOCKERHUB_USERNAME'   // ← Change this
-        APP_NAME         = 'drivecloud'
-        KUBECONFIG       = '/home/jenkins/.kube/config'
-    }
+   environment {
+    DOCKER_HUB_CREDS = credentials('dockerhub-creds')
+    DOCKER_HUB_USER  = 'kundan333'
+    APP_NAME         = 'drivecloud'
+    KUBECONFIG       = '/var/jenkins_home/.kube/config'
+}
 
     stages {
         stage('Checkout') {
