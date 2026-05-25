@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 environment {
     DOCKER_HUB_CREDS = credentials('dockerhub-creds')
     DOCKER_HUB_USER  = 'kundan333'
@@ -116,6 +115,6 @@ post {
         sh 'docker logout || true'
     }
 }
-```
+
 
 }
