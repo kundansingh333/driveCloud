@@ -17,12 +17,11 @@ metadata:
 labels:
 app: backend
 
-```
+
 spec:
   containers:
     - name: backend
       image: kundan333/drivecloud-backend:latest
-
       imagePullPolicy: Always
 
       ports:
@@ -45,7 +44,7 @@ spec:
           port: 5001
         initialDelaySeconds: 30
         periodSeconds: 15
-```
+
 
 ---
 
