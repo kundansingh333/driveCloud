@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: drivecloud
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: YOUR_DOCKERHUB_USERNAME/drivecloud-backend:latest   # ← Change this
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5001
+        env:
+        - name: PORT
+          value: "5001"
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: MONGODB_URI
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: JWT_SECRET
+        - name: JWT_REFRESH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: JWT_REFRESH_SECRET
+        - name: JWT_EXPIRE
+          value: "7d"
+        - name: JWT_REFRESH_EXPIRE
+          value: "30d"
+        - name: UPLOAD_DIR
+          value: "/data/uploads"
+        - name: THUMBNAIL_DIR
+          value: "/data/thumbnails"
+        - name: MAX_FILE_SIZE
+          value: "104857600"
+        - name: DEFAULT_STORAGE_LIMIT
+          value: "16106127360"
+        - name: FRONTEND_URL
+          value: "http://YOUR_EC2_PUBLIC_IP"     # ← Change this
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: SMTP_USER
+        - name: SMTP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: SMTP_PASS
+        volumeMounts:
+        - name: file-storage
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 5001
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 5001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: file-storage
+        hostPath:
+          path: /opt/drivecloud-data
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: drivecloud
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 5001
+  type: ClusterIP
