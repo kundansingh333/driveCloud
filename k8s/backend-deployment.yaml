@@ -1,67 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
-name: backend-deployment
-namespace: drivecloud
-
+  name: backend-deployment
+  namespace: drivecloud
 spec:
-replicas: 1
-
-selector:
-matchLabels:
-app: backend
-
-template:
-metadata:
-labels:
-app: backend
-
-
-spec:
-  containers:
-    - name: backend
-      image: kundan333/drivecloud-backend:latest
-      imagePullPolicy: Always
-
-      ports:
-        - containerPort: 5001
-
-      envFrom:
-        - secretRef:
-            name: backend-secrets
-
-      readinessProbe:
-        httpGet:
-          path: /api/health
-          port: 5001
-        initialDelaySeconds: 20
-        periodSeconds: 10
-
-      livenessProbe:
-        httpGet:
-          path: /api/health
-          port: 5001
-        initialDelaySeconds: 30
-        periodSeconds: 15
-
-
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: kundan333/drivecloud-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - secretRef:
+                name: backend-secrets
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5001
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 15
 ---
-
 apiVersion: v1
 kind: Service
-
 metadata:
-name: backend-service
-namespace: drivecloud
-
+  name: backend-service
+  namespace: drivecloud
 spec:
-selector:
-app: backend
-
-ports:
-- protocol: TCP
-port: 5001
-targetPort: 5001
-
-type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
+  type: ClusterIP
